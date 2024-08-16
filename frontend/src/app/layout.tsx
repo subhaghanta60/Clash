@@ -13,8 +13,8 @@ const fontSans = FontSans({
 
 
 export const metadata: Metadata = {
-  title: "Classing APP",
-  description: "Get Your Audiance To Host",
+  title: "Classing App",
+  description: "Get Your Audiance To Vote",
 };
 
 export default function RootLayout({
