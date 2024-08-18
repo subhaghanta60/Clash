@@ -7,8 +7,10 @@
     "start": "node ./dist/index.js",
     "server": "nodemon, ./dist/index.js",
     "watch": "tsc -w",
-    "build": "tsc",
-    "dev": "concurrently \"npm run watch\" \"npm run server\""
+    "build": "tsc && npm run copy-files",
+    "dev": "concurrently \"npm run watch\" \"npm run server\" \" npm run watch-views \"",
+    "copy-files": "copyfiles -u 1  \"src/views/**/*\" dist/",
+    "watch-views":"nodemon --watch src/views -e ejs -x \" npm run copy-files \"" 
   },
   "author": "",
   "license": "ISC",
@@ -16,8 +18,10 @@
   "dependencies": {
     "@prisma/client": "^5.18.0",
     "concurrently": "^8.2.2",
+    "copyfiles": "^2.4.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.19.2"
   },
   "devDependencies": {
