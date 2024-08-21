@@ -5,7 +5,7 @@ import path from 'path'
 import {fileURLToPath} from 'url'
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 import ejs from 'ejs'
-import { sendEmail } from "./config/mail.js"
+import Routes from "./routes/index.js"
 
 
 const PORT = process.env.PORT || 7000;
@@ -17,6 +17,9 @@ app.use(express.urlencoded({extended:false}))
 
 app.set('view engine', 'ejs')
 app.set("views",path.resolve(_dirname,'./views'))
+
+//ROutes
+app.use(Routes)
 
 
 app.get("/", async (req:Request,res:Response)=> {
@@ -39,8 +42,7 @@ app.get("/", async (req:Request,res:Response)=> {
     
    }
     
-   await emailQueue.add(emailQueueName,{name:"Subha",age:"24"})
-   return res.json({msg: "Email Send Successfully!"})
+   
   
 })
 
