@@ -4,7 +4,7 @@ import { REGISTER_URL } from "@/lib/apiEndpoint"
 import axios, { AxiosError } from "axios"
 
 export async function registerAction(prevState:any,formData:FormData) {
-    console.log(formData)
+   
     
     try {
        const {data} = await axios.post(REGISTER_URL, {
