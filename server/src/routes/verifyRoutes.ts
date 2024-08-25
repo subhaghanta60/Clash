@@ -1,11 +1,7 @@
 import {Router,Request,Response} from 'express'
-import { registerSchema } from '../validation/authValidation.js';
-import { ZodError } from 'zod';
-import { formateError, renderEmailEjs } from '../helper.js';
+
 import prisma from '../config/database.js';
-import bcrypt from "bcrypt";
-import {v4 as uuid} from "uuid";
-import { emailQueue, emailQueueName } from '../jobs/Email.Job.js';
+
 
 const router = Router();
 

@@ -1,18 +1,20 @@
 import {Router,Request,Response} from 'express'
 import { loginSchema, registerSchema } from '../validation/authValidation.js';
 import { ZodError } from 'zod';
-import { formateError, renderEmailEjs } from '../helper.js';
+import { checkDateHourDiff, formateError, renderEmailEjs } from '../helper.js';
 import prisma from '../config/database.js';
 import bcrypt from "bcrypt";
 import {v4 as uuid} from "uuid";
 import { emailQueue, emailQueueName } from '../jobs/Email.Job.js';
 import jwt from "jsonwebtoken"
 import authmiddleware from '../middleware/AuthMiddleware.js';
+import { authLimiter } from '../config/rateLimit.js';
+import { forgerPasswordSchema, resetPasswordSchema } from '../validation/passwordValidation.js';
 
 const router = Router();
 
 //Login Routes
-router.post("/login", async (req:Request, res:Response) => {
+router.post("/login",authLimiter, async (req:Request, res:Response) => {
     const body  = req.body;
     try {
         const payload =loginSchema.parse(body)
@@ -68,7 +70,7 @@ router.post("/login", async (req:Request, res:Response) => {
 
 //Check Login Route
 
-router.post("/check/login", async (req:Request, res:Response) => {
+router.post("/check/login",authLimiter, async (req:Request, res:Response) => {
     const body  = req.body;
     try {
         const payload =loginSchema.parse(body)
@@ -125,7 +127,7 @@ router.post("/check/login", async (req:Request, res:Response) => {
 
 //Register Route
 
-router.post("/register", async (req:Request, res:Response) => {
+router.post("/register",authLimiter, async (req:Request, res:Response) => {
 
     const body  = req.body;
     
@@ -187,7 +189,122 @@ router.post("/register", async (req:Request, res:Response) => {
     }
 })
 
+//Forget Password
 
+router.post("/forget-password", authLimiter, async (req:Request,res:Response) => {
+    
+        
+    
+    try {
+        const body  = req.body;
+        const payload = forgerPasswordSchema.parse(body)
+
+        //Check the user
+
+        let user = await prisma.user.findUnique({where:{email:payload.email}})
+        if(!user || user === null) {
+            return res.status(422).json({message: "User not found Please Check Your Mail", errors: {
+                email:"No User Found With This email"
+            }})
+         }
+
+         const salt = await bcrypt.genSalt(10);
+         const token = await bcrypt.hash(uuid(), salt); 
+
+         await prisma.user.update({
+            data: {
+                password_reset_token: token,
+                token_sent_at: new Date().toISOString()
+            },
+            where: {
+                email:payload.email
+            }
+         })
+
+         const url = `${process.env.CLIENT_APP_URL}/reset-password?email=${payload.email}&token=${token}`
+         const html = await renderEmailEjs("forget-password",{url:url})
+         await emailQueue.add(emailQueueName, {
+            to:payload.email,
+            subject:"Reset Your Password",
+            body:html
+         })
+         return res.json({message:"Password Link  Sent Sucessgully! Please Check Your Mail"});
+
+        
+    } catch (error) {
+        if(error instanceof ZodError){
+            const errors =formateError(error)
+            console.error(errors);
+            return res.status(422).json({message: "Invalid Data", errors})
+
+        }
+
+        return res.status(500).json({message:"Something Went Wrong.Please Try again"})
+    }
+
+})
+
+router.post("/reset-password",authLimiter, async(req:Request,res:Response) => {
+    try {
+    const body = req.body
+    const payload= resetPasswordSchema.parse(body)
+
+    let user = await prisma.user.findUnique({where:{email:payload.email}})
+    if(!user || user === null) {
+        return res.status(422).json({message: "User not found Please Check Your Mail", errors: {
+            email:"Link is Not Correct make sure you copied correct Link"
+        }})
+     }
+
+     // check token
+
+     if(user.password_reset_token !== payload.token ) {
+        return res.status(422).json({message: "User not found Please Check Your Mail", errors: {
+            email:"Link is Not Correct make sure you copied correct Link"
+        }})
+     }
+
+     //check 2 hours time frame
+
+     const hoursDiff = checkDateHourDiff(user.token_sent_at!)
+
+     if(hoursDiff>2){
+        return res.status(422).json({message: "Invalid Data", errors: {
+            email:"Password Reset TOken Got Exoired.Please Sent new Token"
+        }})
+     }
+
+     //* update Password
+
+     const salt = await bcrypt.genSalt(10);
+     const newPass = await bcrypt.hash(payload.password, salt)
+     await prisma.user.update({
+        data:{
+            password:newPass,
+            password_reset_token:null,
+            token_sent_at:null
+        },
+        where: {
+            email:payload.email
+        }
+     })
+
+     return res.json({message:"Password Rest Sucessfully .Please Try login"})
+
+
+   
+        
+     } catch (error) {
+         if(error instanceof ZodError){
+             const errors =formateError(error)
+             return res.status(422).json({message: "Invalid Data", errors})
+ 
+         }
+ 
+         return res.status(500).json({message:"Something Went Wrong.Please Try again"})
+     }
+
+}) 
 
 //Get User
 
