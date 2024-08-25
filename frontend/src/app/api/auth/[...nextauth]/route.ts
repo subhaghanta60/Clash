@@ -1,5 +1,4 @@
 import NextAuth from "next-auth"
-import CredentialProvider from "next-auth/providers/credentials"
 import { authOptions } from "./options"
 
 
