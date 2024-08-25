@@ -13,6 +13,8 @@ const PORT = process.env.PORT || 7000;
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 
+app.use(appLimiter);
+
 //Set View Engine
 
 app.set('view engine', 'ejs')
@@ -50,5 +52,6 @@ app.get("/", async (req:Request,res:Response)=> {
 
 import "./jobs/index.js"
 import { emailQueue, emailQueueName } from "./jobs/Email.Job.js"
+import { appLimiter } from "./config/rateLimit.js"
 
 app.listen(PORT, ()=> console.log(`Server is Running on PORT ${PORT}`));
