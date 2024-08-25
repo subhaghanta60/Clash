@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import Login from '@/components/auth/Login'
+
 import Link from 'next/link'
 import React from 'react'
+
 
 export default function page() {
   return (
@@ -14,37 +14,7 @@ export default function page() {
             </h1>
             <h1 className='text-3xl font-bold mt-2' >Login</h1>
             <p>Welcome Back</p>
-            <form>
-                <div className='mt-4'>
-                    <Label htmlFor='email'>Email</Label>
-                    <Input id="email" type="email" name="email" placeholder='Enter Your Email..'/>
-                </div>
-                <div className='mt-4'>
-                    <Label
-                         htmlFor='password'
-                    >
-                        Password
-                    </Label>
-                    <Input
-                         id="password" 
-                         type="password"
-                         name="password"
-                          placeholder='Enter Your Password..'
-                    />
-                    <div
-                        className='text-right font-bold'
-                    >
-                        <Link 
-                            href="/forget-password"
-                        >
-                            Forget Password?
-                        </Link>
-                    </div>
-                </div>
-                <div className='mt-4'>
-                    <Button className='w-full'>Submit</Button>
-                </div>
-            </form>
+            <Login />
             <p
              className='text-center mt-2'
             >
