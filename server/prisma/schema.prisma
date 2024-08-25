@@ -23,4 +23,17 @@ model User {
   email_verifyat DateTime?
   email_verify_token String?
   created_at DateTime @default(now())
+  Clash Clash[]
+}
+
+
+model Clash {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id Int
+  title String
+  description String
+  image String
+  expire_At DateTime
+  creaed_at DateTime @default(now())
 }

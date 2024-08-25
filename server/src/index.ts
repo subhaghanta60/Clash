@@ -6,7 +6,7 @@ import {fileURLToPath} from 'url'
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 import ejs from 'ejs'
 import Routes from "./routes/index.js"
-
+import fileUpload from "express-fileupload"
 
 const PORT = process.env.PORT || 7000;
 
@@ -22,6 +22,13 @@ app.set("views",path.resolve(_dirname,'./views'))
 
 //ROutes
 app.use(Routes)
+
+app.use(fileUpload({
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
+
+app.use(express.static("public"))
 
 
 app.get("/", async (req:Request,res:Response)=> {
