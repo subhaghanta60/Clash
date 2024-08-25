@@ -1,5 +1,5 @@
 import { CHECK_CREDENTIALS_URL } from "@/lib/apiEndpoint"
-import NextAuth, { AuthOptions, ISODateString } from "next-auth"
+import  { AuthOptions, ISODateString } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import CredentialProvider from "next-auth/providers/credentials"
 import axios from "axios"
@@ -60,4 +60,5 @@ export const authOptions:AuthOptions = {
       }),
       
     ],
+    secret: process.env.NEXTAUTH_SECRET,
 }
