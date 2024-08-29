@@ -43,7 +43,7 @@ router.post("/login",authLimiter, async (req:Request, res:Response) => {
         }
 
         const token = jwt.sign(JWTPayload, process.env.SECRET_KEY! , {expiresIn:"365d"})
-
+        
 
         return res.json({
             message:"Logged in Successfully",
@@ -100,11 +100,20 @@ router.post("/check/login",authLimiter, async (req:Request, res:Response) => {
 
         const token = jwt.sign(JWTPayload, process.env.SECRET_KEY! , {expiresIn:"365d"})
 
-
+        const resPayload = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            token: `Bearer ${token}`,
+          };
+      
         return res.json({
             message:"Logged in Successfully",
             data: {
-               
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                token: `Bearer ${token}`,
             }
         })
         

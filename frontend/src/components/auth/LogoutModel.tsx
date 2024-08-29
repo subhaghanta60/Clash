@@ -8,7 +8,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
+    
   } from "@/components/ui/alert-dialog"
 import { Dispatch, SetStateAction } from "react"
 import {signOut} from "next-auth/react"
@@ -24,7 +24,7 @@ export default function LogoutModel({open, setOpen}:{open:boolean, setOpen:Dispa
   }
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger>Open</AlertDialogTrigger>
+        
         <AlertDialogContent>
             <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

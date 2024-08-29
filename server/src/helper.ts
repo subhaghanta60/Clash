@@ -51,12 +51,12 @@ export const byestToMB = (bytes:number):number => {
     return bytes/(1024*1024)
 }
 
-export const uploadFile = async (image:UploadedFile) => {
-    const imgExt = image?.name.split(".")
+export const uploadFile = async (image:any) => {
+    const imgExt = image?.originalname.split(".")
     const imageName = uuid()+"." + imgExt[1]
     const uploadPath = process.cwd() + "/public/images/"+imageName
 
-    image.mv(uploadPath, (err)=> {
+    image.mv(uploadPath, (err:any)=> {
         if(err) throw err
     })
 

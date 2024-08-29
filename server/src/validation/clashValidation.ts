@@ -23,7 +23,7 @@ export const clashSchema =z.object({
         1000,
         {message:"Description must be less than  1000 characters long."}
     ),
-    expire_At:z
+    expire_at:z
     .string({
         message:"Expire At  is Required."
     })
